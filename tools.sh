@@ -3,6 +3,13 @@
 echo "Bienvenue dans l'installateur interactif de paquets!"
 echo "Sélectionnez les paquets que vous souhaitez installer par catégorie :"
 
+# Vérifier si l'utilisateur est root
+if [ "$(id -u)" != 0 ]; then
+  use_sudo="sudo"
+else
+  use_sudo=""
+fi
+
 # Déterminer le gestionnaire de paquets utilisé sur le système
 if [ -x "$(command -v apt-get)" ]; then
   package_manager="apt-get"
@@ -138,21 +145,20 @@ if [ "$confirm" != "O" ] && [ "$confirm" != "o" ]; then
   echo "L'installation est annulée."
   exit 0
 fi
-
 # Installer les paquets sélectionnés en fonction du gestionnaire de paquets
 for package in "${selected_packages[@]}"; do
   case "$package_manager" in
     "apt-get")
-      sudo apt-get install $package
+      $use_sudo apt-get install $package
       ;;
     "apt")
-      sudo apt install $package
+      $use_sudo apt install $package
       ;;
     "dnf")
-      sudo dnf install $package
+      $use_sudo dnf install $package
       ;;
     "yum")
-      sudo yum install $package
+      $use_sudo yum install $package
       ;;
   esac
 done
